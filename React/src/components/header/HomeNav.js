@@ -23,16 +23,18 @@ import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import YouTubeIcon from "@mui/icons-material/YouTube";
 import { Link } from "react-router-dom";
 
-const settings = ["Profile", "Change password", "Logout"];
+const settings = ["Profile",  "Logout"];
 const upload = ["Book", "Video", "Quiz"];
 function getLink(setting) {
   switch (setting) {
+    case "My Material":
+      return "/my-material";
     case "Profile":
       return "/profile";
     case "Change password":
       return "/change-password";
     case "Logout":
-      return "/logout";
+      return "/Signout";
     case "Book":
       return "/upload-book";
     case "Video":
@@ -69,8 +71,8 @@ function ResponsiveAppBar() {
             <Typography
               variant="h6"
               noWrap
-              component="a"
-              href="/home"
+              component={Link}
+              to="/home"
               sx={{
                 mr: 2,
                 display: { xs: "none", md: "flex" },
@@ -92,8 +94,8 @@ function ResponsiveAppBar() {
             <Typography
               variant="h5"
               noWrap
-              component="a"
-              href=""
+              component={Link}
+              to="/home"
               sx={{
                 mr: 2,
                 display: { xs: "flex", md: "none" },
@@ -191,6 +193,7 @@ function ResponsiveAppBar() {
                     to={getLink(setting)}
                   >
                     <ListItemIcon>
+                      {setting === "My Material" && <LibraryBooksIcon />}
                       {setting === "Profile" && <AccountCircleIcon />}
                       {setting === "Change password" && <VpnKeyIcon />}
                       {setting === "Logout" && <LogoutIcon />}

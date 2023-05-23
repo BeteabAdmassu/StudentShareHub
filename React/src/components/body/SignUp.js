@@ -14,8 +14,14 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import LandingNav from "../header/LandingNav";
 import { Link as RouterLink } from "react-router-dom";
-
-
+import { useDispatch } from "react-redux";
+import { setError } from "../../store/auth-slice";
+import { useState } from "react";
+import Loading from "./Loading";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import Alert from "@mui/material/Alert";
+import AlertTitle from "@mui/material/AlertTitle";
 
 function Copyright(props) {
   return (
@@ -38,22 +44,45 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function SignUp() {
+  const [error, setError] = useState(null); // Error state for the form
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
+  
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      firstName: data.get("firstName"),
-      lastName: data.get("lastName"),
-      email: data.get("email"),
-      password: data.get("password"),
+    setError(null); // Reset the error state
+    setIsLoading(true);
+    await new Promise((resolve, reject) => {
+      dispatch({
+        type: "REGISTER_REQUEST",
+        payload: {
+          firstname: data.get("firstName"),
+          lastname: data.get("lastName"),
+          email: data.get("email"),
+          password: data.get("password"),
+        },
+        callback: () => {
+          setIsLoading(false); // Stop loading
+          resolve(); // Resolve the Promise to continue with the code after the dispatch
+          navigate("/signin");
+        },
+        errorCallback: (error) => {
+          
+          setIsLoading(false); // Stop loading
+          setError(error.message); // Set the error
+        
+        },
+      });
     });
-    
   };
 
   return (
     <ThemeProvider theme={theme}>
       <LandingNav />
+      {isLoading && <Loading />}
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
@@ -64,19 +93,30 @@ export default function SignUp() {
             alignItems: "center",
           }}
         >
+           {error != null && (
+              <Alert severity="error">
+                <AlertTitle>
+                  <strong>Error</strong>{" "}
+                </AlertTitle>
+                {error}
+              </Alert>
+            )}
           <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
             Sign up
           </Typography>
+
+
           <Box
             component="form"
-            noValidate
             onSubmit={handleSubmit}
             sx={{ mt: 3 }}
           >
+          
             <Grid container spacing={2}>
+           
               <Grid item xs={12} sm={6}>
                 <TextField
                   autoComplete="given-name"
@@ -85,13 +125,13 @@ export default function SignUp() {
                   fullWidth
                   id="firstName"
                   label="First Name"
-                  autoFocus
+                  autoFocus 
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
-                  required
                   fullWidth
+                  required
                   id="lastName"
                   label="Last Name"
                   name="lastName"
@@ -119,6 +159,7 @@ export default function SignUp() {
                   autoComplete="new-password"
                 />
               </Grid>
+             
               <Grid item xs={12}>
                 <FormControlLabel
                   control={
@@ -133,11 +174,11 @@ export default function SignUp() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
-              component={RouterLink}
-              to="/"
+              
             >
               Sign Up
-            </Button>
+            </Button> 
+            </Box>
             <Grid container justifyContent="flex-end">
               <Grid item>
                 <Link component={RouterLink} to="/signin" variant="body2">
@@ -146,7 +187,7 @@ export default function SignUp() {
               </Grid>
             </Grid>
           </Box>
-        </Box>
+   
         <Copyright sx={{ mt: 5 }} />
       </Container>
     </ThemeProvider>

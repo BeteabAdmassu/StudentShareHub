@@ -10,5 +10,11 @@ namespace Backend.Data
            : base(options)
         {
         }
+
+        // Add your DbSets here
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+        }
     }
 }

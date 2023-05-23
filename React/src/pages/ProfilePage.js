@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Avatar,
   Button,
@@ -8,11 +8,19 @@ import {
   Container,
   MenuItem,
   Select,
-  FormControl,
   InputLabel,
 } from "@mui/material";
+import Alert from "@mui/material/Alert";
+import AlertTitle from "@mui/material/AlertTitle";
 import HomeNav from "../components/header/HomeNav";
+import IconButton from "@mui/material/IconButton";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import Modal from "@mui/material/Modal";
 import CloseIcon from "@mui/icons-material/Close";
+import { useSelector, useDispatch } from "react-redux";
+import Loading from "../components/body/Loading";
+import GenericAlert from "../components/body/GenericAlert";
+import user from "../store/user-slice";
 
 const drawerWidth = 240;
 
@@ -36,39 +44,37 @@ const styles = {
     flexDirection: "column",
     alignItems: "center",
     marginTop: "20px",
-    padding : "25px",
-    border : "1px solid #e0e0e0",
-    borderRadius : "10px"
-   },
+    padding: "25px",
+    border: "1px solid #e0e0e0",
+    borderRadius: "10px",
+  },
   button: {
     marginTop: "20px",
   },
 };
 
 export default function ProfilePage() {
-  const [selectedDrawerItem, setSelectedDrawerItem] = useState("Book");
+  const data = useSelector((state) => state.user.data);
+  const [Department, setDepartment] = useState(`${data.department}`);
+  const [Year, setYear] = useState(data.year);
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [department, setDepartment] = useState("");
-  const [year, setYear] = useState("");
-  const [course, setCourse] = useState("");
+  const [isPaswordChangeOpen, setIsPasswordChangeOpen] = useState(false);
+  const [isDeleteAccountOpen, setIsDeleteAccountOpen] = useState(false);
+  const [isOption, setIsOption] = useState(true);
+  const [profilePicture, setProfilePicture] = useState(data.profilePicture);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+  const userUpdated = useSelector((state) => state.user.userUpdated);
 
-  const handleEditProfileClick = () => {
-    setIsEditProfileOpen(true);
-  };
-
-  const handleEditProfileCancel = () => {
-    setIsEditProfileOpen(false);
-  };
-
-  const handleTitleChange = (event) => {
-    setTitle(event.target.value);
-  };
-
-  const handleDescriptionChange = (event) => {
-    setDescription(event.target.value);
-  };
+  const dispatch = useDispatch();
+  
+  useEffect(() => {
+    if(showAlert) {
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 5000);
+    }
+  }, [showAlert]);
 
   const handleDepartmentChange = (event) => {
     setDepartment(event.target.value);
@@ -78,211 +84,461 @@ export default function ProfilePage() {
     setYear(event.target.value);
   };
 
-  const handleCourseChange = (event) => {
-    setCourse(event.target.value);
+  const handleProfilePictureChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setProfilePicture(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
-  const handleEditProfileSave = () => {};
+
+  // submit handler
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    const data = new FormData(e.currentTarget);
+  
+    
+     data.append("profilePicture", profilePicture);
+    setIsLoading(true);
+    await new Promise((resolve, reject) => {
+      dispatch({
+        type: "UPDATE_USER",
+        payload: {
+          firstName: data.get("firstName"),
+          lastName: data.get("lastName"),
+          department: data.get("department"),
+          year: data.get("year"),
+          profilePicture,
+        
+        },
+        callback: () => {
+          setIsLoading(false);
+          setIsEditProfileOpen(false);
+          setIsOption(true);
+          setShowAlert(true);
+          resolve();
+        },
+        errorCallback: (error) => {
+          reject();
+          setIsLoading(false);
+        },
+      });
+    });
+  };
+
+  const handlePasswordChangeSubmit = (e) => {
+    e.preventDefault();
+    setIsPasswordChangeOpen(false);
+    setIsOption(true);
+  };
+
+  //Event Handler
+
+  const handleEditProfileClick = () => {
+    setIsEditProfileOpen(true);
+    isOption && setIsOption(false);
+  };
+
+  const handleDeleteProfileClick = () => {
+    setIsDeleteAccountOpen(!isDeleteAccountOpen);
+  };
+
+  const handlePasswordProfileClick = () => {
+    setIsPasswordChangeOpen(true);
+    isOption && setIsOption(false);
+  };
 
   return (
     <>
+      {showAlert && (
+        <GenericAlert
+          severity="success"
+          message="You have successfully Updated your Credential"
+          position={{ bottom: "20px", left: "20px" }}
+        />
+      )}
+      {isLoading && <Loading />}
       <HomeNav />
+
       <Container sx={{ marginTop: "5rem" }}>
         <div style={styles.root}>
           <div style={styles.content}>
-            <Box display="flex" alignItems="center" sx={{ marginBottom: '10px',padding: '10px 20px', border : "1px solid #e0e0e0", borderRadius:"10px"}}>
+            <Box
+              display="flex"
+              alignItems="center"
+              sx={{
+                marginBottom: "10px",
+                padding: "10px 20px",
+                border: "1px solid #e0e0e0",
+                borderRadius: "10px",
+              }}
+            >
               <Typography variant="h5" textAlign="left" color="primary">
                 My Materials
               </Typography>
+            {console.log(data.profilePicture)}
               <Box ml="auto" display="flex" alignItems="center">
-              
-                <Select value="book" variant="standard" sx={{ width: '10rem'}}>
+                <Select value="book" variant="standard" sx={{ width: "10rem" }}>
                   <MenuItem value="book">Book</MenuItem>
                   <MenuItem value="video">Video</MenuItem>
                   <MenuItem value="quiz">Quiz</MenuItem>
                 </Select>
               </Box>
-               <Box>
-                
-               </Box>
-
-
+              <Box></Box>
             </Box>
-           
           </div>
-          <div style={styles.userInformation}>
-            <Avatar
-              alt="User Avatar"
-              src="/user_avatar.jpg"
-              style={{ width: "100px", height: "100px" }}
-            />
-            <Typography
-              variant="h6"
-              component="h2"
-              style={{ marginTop: "10px" }}
+          {isOption && (
+            <Container
+              component="main"
+              maxWidth="xs"
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                flexDirection: "column",
+                border: "1px solid #e0e0e0",
+                borderRadius: "10px",
+                paddingBottom: "5rem",
+                overflow: "hidden",
+              }}
             >
-              John Doe
-            </Typography>
-            <Typography variant="subtitle1" style={{ marginTop: "10px" }}>
-              john.doe@example.com
-            </Typography>
-            <Typography variant="subtitle1" style={{ marginTop: "10px" }}>
-              Computer Science
-            </Typography>
-            <Typography variant="subtitle1" style={{ marginTop: "10px" }}>
-              Year: 3
-            </Typography>
-            <Button
-              variant="contained"
-              color="primary"
-              style={styles.button}
-              onClick={handleEditProfileClick}
-            >
-              Edit Profile
-            </Button>
-          </div>
+              {/* Profile */}
+              <Avatar
+                alt="Profile Picture"
+                src={profilePicture}
+                sx={{ width: 100, height: 100, my: 2 }}
+              />
+              <Typography
+                variant="h4"
+                component="h2"
+                style={{ marginTop: "10px", fontWeight: "bold" }}
+              >
+                {data.firstName} {data.lastName}
+              </Typography>
+              <Typography
+                variant="subtitle1"
+                style={{ marginTop: "10px", color: "#666" }}
+              >
+                {data.email}
+              </Typography>
+              <Typography
+                variant="subtitle1"
+                style={{ marginTop: "10px", color: "#666" }}
+              >
+                {data.department}
+              </Typography>
+              <Typography
+                variant="subtitle1"
+                style={{ marginTop: "10px", color: "#666" }}
+              >
+                Year:{" "}
+                <span style={{ marginLeft: "5px", fontWeight: "bold" }}>
+                  {data.year}
+                </span>
+              </Typography>
+              <Button
+                variant="contained"
+                color="primary"
+                style={{ marginTop: "20px", width: "100%", fontWeight: "bold" }}
+                onClick={handleEditProfileClick}
+              >
+                Edit Profile
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                style={{ marginTop: "20px", width: "100%", fontWeight: "bold" }}
+                onClick={handlePasswordProfileClick}
+              >
+                Change Password
+              </Button>
+              <Button
+                variant="contained"
+                color="error"
+                style={{ marginTop: "20px", width: "100%", fontWeight: "bold" }}
+                onClick={handleDeleteProfileClick}
+              >
+                Delete Account
+              </Button>
+            </Container>
+          )}
 
           {isEditProfileOpen && (
-            <Box
-              style={{
-                position: "fixed",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: "rgba(0, 0, 0, 0.5)",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                overflow: "scroll",
+            <Container
+              component="main"
+              maxWidth="xs"
+              sx={{
+                borderRadius: "10px",
+                border: "1px solid #e0e0e0",
+                paddingBottom: "5rem",
               }}
-              onClick={handleEditProfileCancel}
             >
               <Box
-                style={{
-                  margin: "auto",
-                  marginTop: "5rem",
-                  backgroundColor: "white",
-                  padding: "25px",
-                  borderRadius: "5px",
-                  boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.3)",
-                  width: "30%",
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  p: 3,
                 }}
-                onClick={(e) => e.stopPropagation()}
               >
-                <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                  <Button onClick={handleEditProfileCancel}>
-                    <CloseIcon />
-                  </Button>
+                <Box width="100%">
+                  <IconButton
+                    onClick={() => {
+                      setIsEditProfileOpen(false);
+                      setIsOption(true);
+                    }}
+                  >
+                    <ArrowBackIcon />
+                  </IconButton>
                 </Box>
-                <Typography variant="h5" component="h2">
+
+                <Avatar
+                  alt="Profile Picture"
+                  src={profilePicture}
+                  sx={{ width: 100, height: 100, my: 2 }}
+                />
+                <Typography
+                  component="h1"
+                  variant="h5"
+                  sx={{ fontWeight: "bold", mb: 2 }}
+                >
                   Edit Profile
                 </Typography>
                 <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    margin: "2rem",
-                  }}
+                  component="form"
+                  noValidate
+                  onSubmit={handleEditSubmit}
+                  sx={{ width: "100%" }}
                 >
-                  <Avatar
-                    alt="User Avatar"
-                    src="/user_avatar.jpg"
-                    style={{ width: "100px", height: "100px" }}
+                  <input
+                    accept="image/*"
+                    id="profile-picture-upload"
+                    type="file"
+                    style={{ display: "none" }}
+                    onChange={handleProfilePictureChange}
                   />
-                </Box>
-                <form noValidate autoComplete="off">
-                  <TextField
-                    fullWidth
-                    required
-                    label="Title"
-                    value={title}
-                    onChange={handleTitleChange}
-                    margin="normal"
-                    variant="outlined"
-                  />
-                  <TextField
-                    fullWidth
-                    required
-                    label="Description"
-                    value={description}
-                    onChange={handleDescriptionChange}
-                    margin="normal"
-                    multiline
-                    rows={4}
-                    variant="outlined"
-                  />
-                  <FormControl
-                    fullWidth
-                    required
-                    margin="normal"
-                    variant="outlined"
-                  >
-                    <InputLabel id="department-label">Department</InputLabel>
-                    <Select
-                      labelId="department-label"
-                      id="department-select"
-                      value={department}
-                      onChange={handleDepartmentChange}
-                      label="Department"
+                  <label htmlFor="profile-picture-upload">
+                    <Button
+                      variant="contained"
+                      component="span"
+                      fullWidth
+                      sx={{ mb: 2 }}
                     >
-                      <MenuItem value="software-engineering">
-                        Software Engineering
-                      </MenuItem>
-                      <MenuItem value="computer-science">
-                        Computer Science
-                      </MenuItem>
-                    </Select>
-                  </FormControl>
-                  <FormControl
-                    fullWidth
-                    required
-                    margin="normal"
-                    variant="outlined"
-                  >
-                    <InputLabel id="year-label">Year</InputLabel>
-                    <Select
-                      labelId="year-label"
-                      id="year-select"
-                      value={year}
-                      onChange={handleYearChange}
-                      label="Year"
-                    >
-                      <MenuItem value={1}>1st Year</MenuItem>
-                      <MenuItem value={2}>2nd Year</MenuItem>
-                      <MenuItem value={3}>3rd Year</MenuItem>
-                      <MenuItem value={4}>4th Year</MenuItem>
-                    </Select>
-                  </FormControl>
+                      Upload Profile Picture
+                    </Button>
+                  </label>
+                  <Box sx={{ display: "flex", flexDirection: "row", mb: 2 }}>
+                    <TextField
+                      required
+                      name = "firstName"
+                      label="First Name"
+                      defaultValue={data.firstName}
+                      margin="normal"
+                      variant="outlined"
+                      sx={{ flex: "1", mr: 1 }}
+                    />
+                    <TextField
+                      required
+                      name = "lastName"
+                      label="Last Name"
+                      defaultValue={data.lastName}
+                      margin="normal"
+                      variant="outlined"
+                      sx={{ flex: "1", ml: 1 }}
+                    />
+                  </Box>
                   <TextField
                     fullWidth
-                    required
-                    label="Course"
-                    value={course}
-                    onChange={handleCourseChange}
+                    disabled
+                    label="Email"
+                    value={data.email}
                     margin="normal"
                     variant="outlined"
+                    sx={{ mb: 2 }}
                   />
-                </form>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    marginTop: "1rem",
-                  }}
-                >
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleEditProfileSave}
+                  <InputLabel id="department-label">Department</InputLabel>
+                  <Select
+                    fullWidth
+                    name = "department"
+                    labelId="department-label"
+                    id="department-select"
+                    value={Department}
+                    onChange={handleDepartmentChange}
+                    defaultValue={data.department}
+                    label="Department"
+                    sx={{ mb: 2 }}
                   >
-                    Save
-                  </Button>
+                    <MenuItem value={"Software Engineering"}>
+                      Software Engineering
+                    </MenuItem>
+                    <MenuItem value="Computer Science">
+                      Computer Science
+                    </MenuItem>
+                  </Select>
+                  <InputLabel id="year-label">Year</InputLabel>
+                  <Select
+                    fullWidth
+                    name = "year"
+                    labelId="year-label"
+                    id="year-select"
+                    defaultValue={data.year}
+                    value={Year}
+                    onChange={handleYearChange}
+                    label="Year"
+                    sx={{ mb: 2 }}
+                  >
+                    <MenuItem value={1}>1st Year</MenuItem>
+                    <MenuItem value={2}>2nd Year</MenuItem>
+                    <MenuItem value={3}>3rd Year</MenuItem>
+                    <MenuItem value={4}>4th Year</MenuItem>
+                  </Select>
+                  <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                    <Button variant="contained" color="primary" type="submit">
+                      Save
+                    </Button>
+                  </Box>
                 </Box>
               </Box>
-            </Box>
+            </Container>
+          )}
+
+          {isPaswordChangeOpen && (
+            <Container
+              component="main"
+              maxWidth="xs"
+              sx={{
+                borderRadius: "10px",
+                border: "1px solid #e0e0e0",
+                paddingBottom: "5rem",
+              }}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  p: 3,
+                }}
+              >
+                <Box width="100%">
+                  <IconButton
+                    onClick={() => {
+                      setIsPasswordChangeOpen(false);
+                      setIsOption(true);
+                    }}
+                  >
+                    <ArrowBackIcon />
+                  </IconButton>
+                </Box>
+
+                <Avatar
+                  alt="Profile Picture"
+                  src={profilePicture}
+                  sx={{ width: 100, height: 100, my: 2 }}
+                />
+                <Typography
+                  component="h1"
+                  variant="h5"
+                  sx={{ fontWeight: "bold", mb: 2 }}
+                >
+                  Change Password
+                </Typography>
+                <Box
+                  component="form"
+                  noValidate
+                  onSubmit={handlePasswordChangeSubmit}
+                  sx={{ width: "100%" }}
+                >
+                  <TextField
+                    fullWidth
+                    required
+                    label="Current Password"
+                    type="password"
+                    margin="normal"
+                    variant="outlined"
+                    sx={{ mb: 2 }}
+                  />
+                  <TextField
+                    fullWidth
+                    required
+                    label="New Password"
+                    type="password"
+                    margin="normal"
+                    variant="outlined"
+                    sx={{ mb: 2 }}
+                  />
+                  <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                    <Button variant="contained" color="primary" type="submit">
+                      Save
+                    </Button>
+                  </Box>
+                </Box>
+              </Box>
+            </Container>
           )}
         </div>
       </Container>
+
+      {isDeleteAccountOpen && (
+        <Modal
+          open={true}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+          onClick={handleDeleteProfileClick}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Box
+            sx={{
+              width: 400,
+              bgcolor: "#f5f5f5",
+              p: 3,
+              borderRadius: "4px",
+              boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+            }}
+          >
+            <Box width="100%" display="flex" justifyContent="flex-end" mb={1}>
+              <Button
+                onClick={() => {
+                  handleDeleteProfileClick();
+                }}
+              >
+                <CloseIcon />
+              </Button>
+            </Box>
+            <Typography variant="h6" component="h2" fontWeight="bold">
+              Account Deletion
+            </Typography>
+            <Typography sx={{ mt: 2, fontSize: 16 }}>
+              Are you sure you want to delete your account? This action cannot
+              be undone.
+            </Typography>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "flex-end",
+                mt: 3,
+              }}
+            >
+              <Button variant="contained" color="error" sx={{ mr: 2 }}>
+                Delete Account
+              </Button>
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={handleDeleteProfileClick}
+              >
+                Cancel
+              </Button>
+            </Box>
+          </Box>
+        </Modal>
+      )}
     </>
   );
 }
