@@ -22,6 +22,7 @@ import AddIcon from "@mui/icons-material/Add";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import YouTubeIcon from "@mui/icons-material/YouTube";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const settings = ["Profile",  "Logout"];
 const upload = ["Book", "Video", "Quiz"];
@@ -48,6 +49,7 @@ function getLink(setting) {
 function ResponsiveAppBar() {
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const data = useSelector((state) => state.user.data);
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -166,7 +168,7 @@ function ResponsiveAppBar() {
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                  <Avatar alt="Profile Picture" src={data.profilePicture} />
                 </IconButton>
               </Tooltip>
               <Menu
@@ -193,9 +195,7 @@ function ResponsiveAppBar() {
                     to={getLink(setting)}
                   >
                     <ListItemIcon>
-                      {setting === "My Material" && <LibraryBooksIcon />}
                       {setting === "Profile" && <AccountCircleIcon />}
-                      {setting === "Change password" && <VpnKeyIcon />}
                       {setting === "Logout" && <LogoutIcon />}
                     </ListItemIcon>
                     <Typography

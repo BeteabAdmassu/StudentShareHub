@@ -160,8 +160,6 @@ C:\Books\Web\Asp.net\Web project\StudentShareHub\Backend\obj\Debug\net6.0\refint
 C:\Books\Web\Asp.net\Web project\StudentShareHub\Backend\obj\Debug\net6.0\Backend.pdb
 C:\Books\Web\Asp.net\Web project\StudentShareHub\Backend\obj\Debug\net6.0\Backend.genruntimeconfig.cache
 C:\Books\Web\Asp.net\Web project\StudentShareHub\Backend\obj\Debug\net6.0\ref\Backend.dll
-C:\Books\Web\Asp.net\Web project\StudentShareHub\Backend\bin\Debug\net6.0\Google.Authenticator.dll
-C:\Books\Web\Asp.net\Web project\StudentShareHub\Backend\bin\Debug\net6.0\QRCoder.dll
 C:\Books\Web\Asp.net\Web project\StudentShareHub\Backend\bin\Debug\net6.0\Microsoft.Extensions.Configuration.dll
 C:\Books\Web\Asp.net\Web project\StudentShareHub\Backend\bin\Debug\net6.0\Microsoft.Extensions.Configuration.Abstractions.dll
 C:\Books\Web\Asp.net\Web project\StudentShareHub\Backend\bin\Debug\net6.0\Microsoft.Extensions.Configuration.Binder.dll

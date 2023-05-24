@@ -164,9 +164,6 @@ namespace Backend.ControllersBase
                 if (profilePicture.Length > 0)
                 {
                     var fileName = Guid.NewGuid().ToString() + Path.GetExtension(profilePicture.FileName);
-                    //var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", fileName);
-                    //var filePath = @"C:\Books\Web\Asp.net\StudentShareHubApi\StudentShareHubApi\Assets" + fileName;
-
                     var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Assets", fileName);
 
                     using (var stream = new FileStream(filePath, FileMode.Create))
@@ -202,8 +199,6 @@ namespace Backend.ControllersBase
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 }),
                 Expires = DateTime.UtcNow.AddDays(7),
-                // Issuer = _jwtConfig.Issuer,
-                // Audience = _jwtConfig.Audience,
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 

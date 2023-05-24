@@ -10,8 +10,6 @@ import {
   Select,
   InputLabel,
 } from "@mui/material";
-import Alert from "@mui/material/Alert";
-import AlertTitle from "@mui/material/AlertTitle";
 import HomeNav from "../components/header/HomeNav";
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -20,7 +18,6 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useSelector, useDispatch } from "react-redux";
 import Loading from "../components/body/Loading";
 import GenericAlert from "../components/body/GenericAlert";
-import user from "../store/user-slice";
 
 const drawerWidth = 240;
 
@@ -55,26 +52,29 @@ const styles = {
 
 export default function ProfilePage() {
   const data = useSelector((state) => state.user.data);
-  const [Department, setDepartment] = useState(`${data.department}`);
-  const [Year, setYear] = useState(data.year);
+  const [Department, setDepartment] = useState("");
+  const [Year, setYear] = useState("");
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
   const [isPaswordChangeOpen, setIsPasswordChangeOpen] = useState(false);
   const [isDeleteAccountOpen, setIsDeleteAccountOpen] = useState(false);
   const [isOption, setIsOption] = useState(true);
-  const [profilePicture, setProfilePicture] = useState(data.profilePicture);
+  const [profilePicture, setProfilePicture] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
-  const userUpdated = useSelector((state) => state.user.userUpdated);
+
 
   const dispatch = useDispatch();
   
   useEffect(() => {
+    setProfilePicture(data.profilePicture);
+    setDepartment(data.department);
+    setYear(data.year);
     if(showAlert) {
       setTimeout(() => {
         setShowAlert(false);
       }, 5000);
     }
-  }, [showAlert]);
+  }, [showAlert, data.profilePicture, data.department, data.year]);
 
   const handleDepartmentChange = (event) => {
     setDepartment(event.target.value);
@@ -97,7 +97,7 @@ export default function ProfilePage() {
 
   // submit handler
   const handleEditSubmit = async (e) => {
-    e.preventDefault();
+    
     const data = new FormData(e.currentTarget);
   
     
@@ -111,7 +111,7 @@ export default function ProfilePage() {
           lastName: data.get("lastName"),
           department: data.get("department"),
           year: data.get("year"),
-          profilePicture,
+          profilePicture: profilePicture
         
         },
         callback: () => {
@@ -179,7 +179,7 @@ export default function ProfilePage() {
               <Typography variant="h5" textAlign="left" color="primary">
                 My Materials
               </Typography>
-            {console.log(data.profilePicture)}
+
               <Box ml="auto" display="flex" alignItems="center">
                 <Select value="book" variant="standard" sx={{ width: "10rem" }}>
                   <MenuItem value="book">Book</MenuItem>

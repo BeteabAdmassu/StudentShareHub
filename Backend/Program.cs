@@ -2,13 +2,23 @@ using Backend.Configurations;
 using Backend.Data;
 using Backend.Model;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+
 using Microsoft.Extensions.DependencyInjection;
+
 using Microsoft.IdentityModel.Tokens;
+using System;
+using System.IO;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,10 +51,16 @@ builder.Services.AddAuthentication()
 
 builder.Services.AddAuthorization();
 
+/*builder.Services.AddStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(builder.Environment.ContentRootPath, "wwwroot")),
+    RequestPath = "/assets" // Modify the RequestPath if needed
+});*/
+
+// Add sttic file middleware
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-//builder.Services.AddSingleton<JwtConfig>(builder.Configuration.GetSection("JwtSettings:SecretKey").Value);
 
 builder.Services.AddSingleton<JwtConfig>(options =>
 {
@@ -54,8 +70,7 @@ builder.Services.AddSingleton<JwtConfig>(options =>
         Issuer = builder.Configuration.GetSection("JwtSettings:Issuer").Value,
         Audience = builder.Configuration.GetSection("JwtSettings:Audience").Value
     };
-}
-);
+});
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
@@ -65,6 +80,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     .AddDefaultTokenProviders();
 
 builder.Services.AddControllers();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -75,7 +91,7 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 app.UseCors();
-// Configure the HTTP request pipeline.
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -88,6 +104,12 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(app.Environment.ContentRootPath, "Assets")),
+    RequestPath = "/Assets" // Modify the RequestPath if needed
+}); // Serve static files
 
 app.MapControllers();
 
