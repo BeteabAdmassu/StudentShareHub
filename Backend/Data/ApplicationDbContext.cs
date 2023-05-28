@@ -15,9 +15,9 @@ namespace Backend.Data
         }
 
         // Add your DbSets here
-        public DbSet<Quiz> Quizzes { get; set; }
+        // public DbSet<Quiz> Quizzes { get; set; }
 
         public DbSet<Book> Books { get; set; }
-        public DbSet<Video> videos { get; set; }
+        //  public DbSet<Video> videos { get; set; }
     }
 }

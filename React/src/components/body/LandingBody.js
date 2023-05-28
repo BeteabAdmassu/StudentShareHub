@@ -58,7 +58,7 @@ export default function SimpleContainer() {
         </Box>
       </Box>
 
-      <Box margin="3rem" maxWidth="xl">
+      <Box margin="3rem" maxWidth="xl" textAlign='center'>
         <img src={Hilcoe} alt="Hilcoe" style={{ maxHeight: "10vh" }} />
       </Box>
       <Box
