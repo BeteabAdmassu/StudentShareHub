@@ -154,6 +154,7 @@ export function* fetchUserData() {
 
 export function* updateUserData(action) {
   yield new Promise((resolve) => setTimeout(resolve, 2000));
+
   try {
     const formData = new FormData();
     formData.append("firstname", action.payload.firstName);
@@ -161,19 +162,20 @@ export function* updateUserData(action) {
     formData.append("department", action.payload.department);
     formData.append("year", action.payload.year);
     formData.append("profilePicture", action.payload.profilePicture);
-    
 
-     yield call(
-      fetch,
-      "https://localhost:7061/api/User/UpdateUser",
-      {
-        method: "PUT",
-        headers: {
-          Authorization: `bearer ${localStorage.getItem("token")}`,
-        },
-        body: formData,
-      }
-    );
+    yield call(fetch, "https://localhost:7061/api/User/UpdateUser", {
+      method: "PUT",
+      headers: {
+        
+        Authorization: `bearer ${localStorage.getItem("token")}`,
+        //"Content-Type": "multipart/form-data",
+        // Set the content type to multipart/form-data
+      },
+      body: formData,
+      
+    });
+
+    
 
     yield put({ type: "FETCH_USER_DATA" });
 

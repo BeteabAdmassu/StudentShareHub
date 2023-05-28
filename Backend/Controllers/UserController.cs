@@ -1,14 +1,13 @@
-﻿using Backend.Model;
+﻿using Backend.Configurations;
+using Backend.Model.User;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.IdentityModel.Tokens;
-using Backend.Configurations;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Backend.Data;
 
 namespace Backend.ControllersBase
 {
@@ -146,11 +145,20 @@ namespace Backend.ControllersBase
         {
             var userEmail = User.FindFirstValue(ClaimTypes.Email);
             var user = await _userManager.FindByEmailAsync(userEmail);
-            // Create a UserInfo object to hold the user information
+
             if (user == null)
             {
-                // User not found
-                return NotFound();
+                return NotFound(); // User not found
+            }
+
+            // Delete previous profile picture if it exists
+            if (!string.IsNullOrEmpty(user.ProfilePicture))
+            {
+                var previousFilePath = Path.Combine(Directory.GetCurrentDirectory(), "Assets", user.ProfilePicture);
+                if (System.IO.File.Exists(previousFilePath))
+                {
+                    System.IO.File.Delete(previousFilePath);
+                }
             }
 
             user.FirstName = model.FirstName;
@@ -185,7 +193,54 @@ namespace Backend.ControllersBase
             }
         }
 
-        // Token Generation
+        [HttpGet]
+        [Route("DeleteUser")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> DeleteUser()
+        {
+            var userEmail = User.FindFirstValue(ClaimTypes.Email);
+            var user = await _userManager.FindByEmailAsync(userEmail);
+            if (user == null)
+            {
+                return NotFound(); // User not found
+            }
+            var result = await _userManager.DeleteAsync(user);
+            if (result.Succeeded)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest(result.Errors);
+            }
+        }
+
+        [HttpPost]
+        [Route("ChangePassword")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> ChangePassword(ChangePasswordModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var userEmail = User.FindFirstValue(ClaimTypes.Email);
+                var user = await _userManager.FindByEmailAsync(userEmail);
+                if (user == null)
+                {
+                    return NotFound(); // User not found
+                }
+                var result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+                if (result.Succeeded)
+                {
+                    return Ok();
+                }
+                else
+                {
+                    return BadRequest(result.Errors);
+                }
+            }
+            return BadRequest(ModelState);
+        }
+
         private string GenerateJwtToken(ApplicationUser user)
         {
             var key = Encoding.ASCII.GetBytes(_jwtConfig.SecretKey);

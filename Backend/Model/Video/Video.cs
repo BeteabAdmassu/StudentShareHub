@@ -1,6 +1,6 @@
-﻿namespace Backend.Model
+﻿namespace Backend.Model.Video
 {
-    public class VideoModel
+    public class Video
     {
         public int Id { get; set; }
         public string Title { get; set; }

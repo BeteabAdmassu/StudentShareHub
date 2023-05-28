@@ -58,18 +58,17 @@ export default function ProfilePage() {
   const [isPaswordChangeOpen, setIsPasswordChangeOpen] = useState(false);
   const [isDeleteAccountOpen, setIsDeleteAccountOpen] = useState(false);
   const [isOption, setIsOption] = useState(true);
-  const [profilePicture, setProfilePicture] = useState('');
+  const [profilePicture, setProfilePicture] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
 
-
   const dispatch = useDispatch();
-  
+
   useEffect(() => {
     setProfilePicture(data.profilePicture);
     setDepartment(data.department);
     setYear(data.year);
-    if(showAlert) {
+    if (showAlert) {
       setTimeout(() => {
         setShowAlert(false);
       }, 5000);
@@ -97,11 +96,17 @@ export default function ProfilePage() {
 
   // submit handler
   const handleEditSubmit = async (e) => {
-    
+    e.preventDefault();
     const data = new FormData(e.currentTarget);
   
-    
-     data.append("profilePicture", profilePicture);
+    // Get the file input element
+    const fileInput = e.currentTarget.querySelector('input[type="file"]');
+    // Check if a file is selected
+    if (fileInput.files.length > 0) {
+      // Append the file with the appropriate content type
+      data.append("profilePicture", fileInput.files[0], fileInput.files[0].name);
+    }
+  
     setIsLoading(true);
     await new Promise((resolve, reject) => {
       dispatch({
@@ -111,8 +116,7 @@ export default function ProfilePage() {
           lastName: data.get("lastName"),
           department: data.get("department"),
           year: data.get("year"),
-          profilePicture: profilePicture
-        
+          profilePicture: data.get("profilePicture"),
         },
         callback: () => {
           setIsLoading(false);
@@ -332,7 +336,7 @@ export default function ProfilePage() {
                   <Box sx={{ display: "flex", flexDirection: "row", mb: 2 }}>
                     <TextField
                       required
-                      name = "firstName"
+                      name="firstName"
                       label="First Name"
                       defaultValue={data.firstName}
                       margin="normal"
@@ -341,7 +345,7 @@ export default function ProfilePage() {
                     />
                     <TextField
                       required
-                      name = "lastName"
+                      name="lastName"
                       label="Last Name"
                       defaultValue={data.lastName}
                       margin="normal"
@@ -361,7 +365,7 @@ export default function ProfilePage() {
                   <InputLabel id="department-label">Department</InputLabel>
                   <Select
                     fullWidth
-                    name = "department"
+                    name="department"
                     labelId="department-label"
                     id="department-select"
                     value={Department}
@@ -380,7 +384,7 @@ export default function ProfilePage() {
                   <InputLabel id="year-label">Year</InputLabel>
                   <Select
                     fullWidth
-                    name = "year"
+                    name="year"
                     labelId="year-label"
                     id="year-select"
                     defaultValue={data.year}

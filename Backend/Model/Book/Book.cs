@@ -1,6 +1,6 @@
-﻿namespace Backend.Model
+﻿namespace Backend.Model.Book
 {
-    public class BookModel
+    public class Book
     {
         public int Id { get; set; }
         public string title { get; set; }

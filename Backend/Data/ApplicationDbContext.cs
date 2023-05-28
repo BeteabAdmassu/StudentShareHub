@@ -1,4 +1,7 @@
-﻿using Backend.Model;
+﻿using Backend.Model.Book;
+using Backend.Model.Quiz;
+using Backend.Model.User;
+using Backend.Model.Video;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,9 +15,9 @@ namespace Backend.Data
         }
 
         // Add your DbSets here
-        protected override void OnModelCreating(ModelBuilder builder)
-        {
-            base.OnModelCreating(builder);
-        }
+        public DbSet<Quiz> Quizzes { get; set; }
+
+        public DbSet<Book> Books { get; set; }
+        public DbSet<Video> videos { get; set; }
     }
 }

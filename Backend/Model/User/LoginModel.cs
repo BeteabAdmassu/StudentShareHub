@@ -1,4 +1,4 @@
-﻿namespace Backend.Model
+﻿namespace Backend.Model.User
 {
     public class LoginModel
     {

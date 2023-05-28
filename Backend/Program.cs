@@ -1,6 +1,5 @@
 using Backend.Configurations;
 using Backend.Data;
-using Backend.Model;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -19,6 +18,8 @@ using System.Security.Claims;
 using System.Text;
 
 using Microsoft.Extensions.FileProviders;
+
+using Backend.Model.User;
 
 var builder = WebApplication.CreateBuilder(args);
 

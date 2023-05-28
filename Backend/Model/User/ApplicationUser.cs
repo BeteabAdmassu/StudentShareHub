@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel;
 
-namespace Backend.Model
+namespace Backend.Model.User
 {
     public class ApplicationUser : IdentityUser
     {
@@ -19,7 +19,7 @@ namespace Backend.Model
         public ApplicationUser()
         {
             Department = "Computer science";
-            Year = 1;
+            Year = 0;
         }
     }
 }
