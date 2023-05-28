@@ -18,6 +18,6 @@ namespace Backend.Data
         public DbSet<Quiz> Quizzes { get; set; }
 
         public DbSet<Book> Books { get; set; }
-        public DbSet<Video> videos { get; set; }
+        public DbSet<Video> Videos { get; set; }
     }
 }
