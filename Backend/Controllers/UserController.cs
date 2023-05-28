@@ -133,7 +133,7 @@ namespace Backend.ControllersBase
             }
 
             var baseUrl = $"{Request.Scheme}://{Request.Host.Value}";
-            var profilePictureUrl = $"{baseUrl}/Assets/{fileName}";
+            var profilePictureUrl = $"{baseUrl}/Assets/ProfilePics/{fileName}";
 
             return profilePictureUrl;
         }
@@ -154,7 +154,7 @@ namespace Backend.ControllersBase
             // Delete previous profile picture if it exists
             if (!string.IsNullOrEmpty(user.ProfilePicture))
             {
-                var previousFilePath = Path.Combine(Directory.GetCurrentDirectory(), "Assets", user.ProfilePicture);
+                var previousFilePath = Path.Combine(Directory.GetCurrentDirectory(), "Assets/ProfilePics", user.ProfilePicture);
                 if (System.IO.File.Exists(previousFilePath))
                 {
                     System.IO.File.Delete(previousFilePath);
@@ -172,7 +172,8 @@ namespace Backend.ControllersBase
                 if (profilePicture.Length > 0)
                 {
                     var fileName = Guid.NewGuid().ToString() + Path.GetExtension(profilePicture.FileName);
-                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Assets", fileName);
+                
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Assets/ProfilePics", fileName);
 
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
