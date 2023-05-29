@@ -5,6 +5,7 @@ using Backend.Model.Video;
 using Backend.Model.Book;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Backend.Controllers
 {
@@ -23,8 +24,9 @@ namespace Backend.Controllers
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> UploadVideo([FromForm] VideoUploadModel model)
         {
-            if (ModelState.IsValid)
 
+
+            if (ModelState.IsValid)
             {
                 // Create a new Video entity
                 var video = new Video
@@ -34,8 +36,9 @@ namespace Backend.Controllers
                     Department = model.Department,
                     Year = model.Year,
                     VideoUrl = model.VideoUrl,
-                    Course = model.Course
-                   
+                    Course = model.Course,
+                    //Author = email,
+                    Date= DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")
                 }; 
 
                 // Save the book to the database
@@ -46,6 +49,20 @@ namespace Backend.Controllers
             }
 
             return BadRequest(ModelState);
+        }
+        [HttpGet]
+        [Route("GetAllVideo")]
+        public ActionResult<IEnumerable<Video>> GetAllVideo()
+        {
+            List<Video> video = _context.Videos.ToList();
+            return Ok(video);
+        }
+        [HttpGet]
+        [Route("GetTopTen")]
+        public ActionResult<IEnumerable<Video>> GetTopTen()
+        {
+            List<Video> video = _context.Videos.OrderByDescending(b => b.views).Take(10).ToList();
+            return Ok(video);
         }
         /* private readonly ApplicationDbContext _context;
 
