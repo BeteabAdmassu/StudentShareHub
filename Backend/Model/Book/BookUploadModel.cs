@@ -6,7 +6,6 @@
         public string Description { get; set; }
         public string Department { get; set; }
         public int Year { get; set; }
-        public string File { get; set; }
         public string Course { get; set; }
     }
 }

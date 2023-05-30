@@ -22,12 +22,13 @@ namespace Backend.Controllers
         [HttpPost]
         [Route("UploadBook")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> UploadBook([FromForm] BookUploadModel model)
+        public async Task<IActionResult> UploadBook([FromForm] BookUploadModel model, [FromForm] IFormFile file)
         {
             if (ModelState.IsValid)
             {
                 // Store the book file on the server
-                var filePath = await StoreBookFile(Request.Form.Files[0]);
+                var filePath = await StoreBookFile(file);
+                var userEmail = User.FindFirstValue(ClaimTypes.Email);
 
                 // Create a new Book entity
                 var book = new Book
@@ -36,8 +37,10 @@ namespace Backend.Controllers
                     Description = model.Description,
                     Department = model.Department,
                     Year = model.Year,
-                    File = filePath,
-                    Course = model.Course
+                    Author = userEmail,
+                    FilePath = filePath,
+                    Course = model.Course,
+                    Date = DateTime.Now.ToString("dd/mm/yyyy")
                 };
 
                 // Save the book to the database
@@ -71,8 +74,29 @@ namespace Backend.Controllers
             return uniqueFileName;
         }
 
-        /*
+        [HttpGet]
+        [Route("GetAllBooks")]
+        public ActionResult<IEnumerable<Book>> GetAllBooks()
+        {
+            List<Book> books = _context.Books.ToList();
+            return Ok(books);
+        }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        /*
           // GET: api/books
           [HttpGet]
           public ActionResult<IEnumerable<Book>> GetAllBooks()
