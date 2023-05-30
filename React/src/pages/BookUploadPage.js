@@ -8,7 +8,7 @@ import {
   Select,
   MenuItem,
   Box,
-  Container,
+  Container
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import HomeNav from "../components/header/HomeNav";
@@ -18,15 +18,11 @@ import { useDispatch } from "react-redux";
 import { userBookActions } from "../store/userBook";
 import { v4 as uuidv4 } from "uuid";
 import { useSelector } from "react-redux";
-import Loading from "../components/body/Loading";
-import GenericAlert from "../components/body/GenericAlert";
 
 export default function BookUploadPage() {
   const [department, setDepartment] = useState("");
   const [year, setYear] = useState("");
   const [file, setFile] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [showAlert, setShowAlert] = useState(false);
 
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
@@ -65,65 +61,30 @@ export default function BookUploadPage() {
     setFile(e.target.files[0]);
   };
 
-  const handleSubmit = async (e) => {
-    // event.preventDefault();
-    // const data = new FormData(event.currentTarget);
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
 
-    // if (file) {
-    //   const newBook = {
-    //     id: uuidv4(),
-    //     title: data.get("title"),
-    //     description: data.get("description"),
-    //     user: user,
-    //     likes: 0,
-    //     views: 0,
-    //     department: data.get("department"),
-    //     year: data.get("year"),
-    //     course: data.get("course"),
-    //     file: file,
-    //     date: new Date(),
-    //     materialType: "Book",
-    //     comments: [],
-    //   };
-    //   dispatch(userBookActions.addBook(newBook));
-    // } else {
-    //   alert("Please select a file");
-    // }
-
-    e.preventDefault();
-    const data = new FormData(e.currentTarget);
-
-    // Get the file input element
-    const fileInput = e.currentTarget.querySelector('input[type="file"]');
-    // Check if a file is selected
-    if (fileInput.files.length > 0) {
-      // Append the file with the appropriate content type
-      data.append("file", fileInput.files[0], fileInput.files[0].name);
+    if (file) {
+      const newBook = {
+        id: uuidv4(),
+        title: data.get("title"),
+        description: data.get("description"),
+        user: user,
+        likes: 0,
+        views: 0,
+        department: data.get("department"),
+        year: data.get("year"),
+        course: data.get("course"),
+        file: file,
+        date: new Date(),
+        materialType: "Book",
+        comments: [],
+      };
+      dispatch(userBookActions.addBook(newBook));
+    } else {
+      alert("Please select a file");
     }
-
-    setIsLoading(true);
-    await new Promise((resolve, reject) => {
-      dispatch({
-        type: "UPLOAD_BOOK",
-        payload: {
-          title: data.get("title"),
-          description: data.get("description"),
-          department: data.get("department"),
-          year: data.get("year"),
-          course: data.get("course"),
-          file: file,
-        },
-        callback: () => {
-          setIsLoading(false);
-          setShowAlert(true);
-          resolve();
-        },
-        errorCallback: (error) => {
-          reject();
-          setIsLoading(false);
-        },
-      });
-    });
   };
 
   const handleFileUpload = () => {
@@ -133,13 +94,6 @@ export default function BookUploadPage() {
 
   return (
     <>
-      {showAlert && (
-        <GenericAlert
-          severity="success"
-          message="You have successfully Updated your Credential"
-          position={{ bottom: "20px", left: "20px" }}
-        />
-      )}
       <HomeNav />
       <Container maxWidth="md" sx={{ marginTop: "5rem" }}>
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
