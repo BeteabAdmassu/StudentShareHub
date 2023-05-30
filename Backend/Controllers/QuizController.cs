@@ -5,6 +5,7 @@ using Backend.Model.Quiz;
 using Backend.Model.Video;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Cryptography;
 
 namespace Backend.Controllers
 {
@@ -38,21 +39,26 @@ namespace Backend.Controllers
 
                 };
 
-
                 _context.Quizzes.Add(_quiz);
                 var choice = new Choice();
                 var question=new Question();
+                int cid;
+                int qid;
+
                 foreach (var _question in questions) {
                     question.answer = _question.answer;
                     question.question = _question.question;
                     question.quiz = _quiz;
-          
                     _context.Questions.Add(question);
+
+                    Question q = _context.Questions.OrderByDescending(c => c.QuestionId).FirstOrDefault();
                     foreach (var _choice in choices)
                     {
                         choice.choice = _choice.choice;
-                        choice.question = question
+                        choice.question = q;
+
                         _context.Choices.Add(choice);
+                        
                     }
                 }
 
