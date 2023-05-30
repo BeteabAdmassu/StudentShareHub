@@ -37,8 +37,8 @@ namespace Backend.Controllers
                     Year = model.Year,
                     VideoUrl = model.VideoUrl,
                     Course = model.Course,
-                    //Author = email,
-                    Date= DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")
+                    Author = "mockAuthor",
+                    Date= DateTime.Now.ToString("dd/MM/yyyy")
                 }; 
 
                 // Save the book to the database
@@ -50,13 +50,8 @@ namespace Backend.Controllers
 
             return BadRequest(ModelState);
         }
-        [HttpGet]
-        [Route("GetAllVideo")]
-        public ActionResult<IEnumerable<Video>> GetAllVideo()
-        {
-            List<Video> video = _context.Videos.ToList();
-            return Ok(video);
-        }
+        
+ 
         [HttpGet]
         [Route("GetTopTen")]
         public ActionResult<IEnumerable<Video>> GetTopTen()
@@ -64,21 +59,15 @@ namespace Backend.Controllers
             List<Video> video = _context.Videos.OrderByDescending(b => b.views).Take(10).ToList();
             return Ok(video);
         }
-        /* private readonly ApplicationDbContext _context;
-
-         public VideoController(ApplicationDbContext context)
-         {
-             _context = context;
-         }
-
-         // GET: api/video
+           // GET: api/video
          [HttpGet]
-         public ActionResult<IEnumerable<Video>> GetAllVideo()
+        [Route("GetAllVideos")]
+         public ActionResult<IEnumerable<Video>> GetAllVideos()
          {
              List<Video> video = _context.Videos.ToList();
              return Ok(video);
          }
-
+        /*
          // GET: api/video/{id}
          [HttpGet("{id}")]
          public ActionResult<Video> GetVideoById(int id)

@@ -22,5 +22,7 @@ namespace Backend.Model.Video
         public string Date { get; set; }
 
         public Comment[] Comments { get; set; }
+
+        public string Submitted { get; set; } = "false";
     }
 }
