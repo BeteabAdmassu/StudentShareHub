@@ -1,15 +1,14 @@
-﻿using Backend.Model.Book;
+﻿
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Backend.Model.Quiz
 {
-    public class Quiz
+    public class Quiz:QuizUploadModel
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
-        public string Title { get; set; }
+        public int QuizId { get; set; }
       
         public int Year { get; set; }
 
@@ -19,9 +18,10 @@ namespace Backend.Model.Quiz
 
         public int views { get; set; } = 0;
 
-        public string MaterialType { get; set; }
+        public string MaterialType { get; set; } = "Quiz";
 
-        public string Date { get; set; }
+        public string Date { get; set; } = DateTime.Now.ToString("MM/dd/yyyy");
+
 
     }
 }
