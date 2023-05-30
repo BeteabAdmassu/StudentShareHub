@@ -39,17 +39,23 @@ namespace Backend.Controllers
 
                 };
 
+
                 _context.Quizzes.Add(_quiz);
+                await _context.SaveChangesAsync();
                 var choice = new Choice();
                 var question=new Question();
                 int cid;
                 int qid;
-
+                // finds the quiz with the largest Id
+                Quiz qu = _context.Quizzes.OrderByDescending(c => c.QuizId).FirstOrDefault();
+                //Iterates through all the quizzes and sets their valuess
                 foreach (var _question in questions) {
                     question.answer = _question.answer;
                     question.question = _question.question;
-                    question.quiz = _quiz;
+                    question.quiz = qu;
+
                     _context.Questions.Add(question);
+                    await _context.SaveChangesAsync();
 
                     Question q = _context.Questions.OrderByDescending(c => c.QuestionId).FirstOrDefault();
                     foreach (var _choice in choices)
