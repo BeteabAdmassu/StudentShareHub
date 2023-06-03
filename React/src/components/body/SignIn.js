@@ -47,10 +47,9 @@ const theme = createTheme();
 export default function SignInSide() {
   const [isLoading, setIsLoading] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
-const [error, setError] = useState(null); // Error state for the form
+  const [error, setError] = useState(null); // Error state for the form
   const registerSuccess = useSelector((state) => state.auth.registerSuccess);
- 
-
+  const user = useSelector((state) => state.user.data);
 
   useEffect(() => {
     if (registerSuccess) {
@@ -85,8 +84,14 @@ const [error, setError] = useState(null); // Error state for the form
         },
         callback: () => {
           setIsLoading(false); // Stop loading
-          resolve(); // Resolve the Promise to continue with the code after the dispatch
+        // Resolve the Promise to continue with the code after the dispatch
+        
+        console.log(user.year)
+        if(user.year === 0)
           navigate("/choose-department");
+          else
+          navigate("/home");
+          resolve(); 
         },
         errorCallback: (error) => {
           setError(error.message); // Set the error

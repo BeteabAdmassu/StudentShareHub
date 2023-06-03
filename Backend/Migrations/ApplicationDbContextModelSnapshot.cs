@@ -22,7 +22,7 @@ namespace Backend.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("Backend.Model.Book.Book", b =>
+            modelBuilder.Entity("Backend.Model.Book.BookModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -30,7 +30,15 @@ namespace Backend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Author")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Course")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -46,7 +54,7 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("File")
+                    b.Property<string>("FilePath")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -70,11 +78,16 @@ namespace Backend.Migrations
                     b.Property<int>("Year")
                         .HasColumnType("int");
 
-                    b.Property<string>("course")
+                    b.Property<string>("authorProfilePic")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
 
                     b.ToTable("Books");
                 });
@@ -91,7 +104,7 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("BookId")
+                    b.Property<int?>("BookModelId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Date")
@@ -101,9 +114,14 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("VideoModelId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("BookId");
+                    b.HasIndex("BookModelId");
+
+                    b.HasIndex("VideoModelId");
 
                     b.ToTable("Comments");
                 });
@@ -189,6 +207,76 @@ namespace Backend.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("Backend.Model.Video.VideoModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Author")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Course")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Date")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Department")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Likes")
+                        .HasColumnType("int");
+
+                    b.Property<string>("MaterialType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Submitted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VideoUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
+                    b.Property<string>("authorProfilePic")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("views")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.ToTable("Videos");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -324,11 +412,37 @@ namespace Backend.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Backend.Model.Book.BookModel", b =>
+                {
+                    b.HasOne("Backend.Model.User.ApplicationUser", "ApplicationUser")
+                        .WithMany("UserBooks")
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+                });
+
             modelBuilder.Entity("Backend.Model.Book.Comment", b =>
                 {
-                    b.HasOne("Backend.Model.Book.Book", null)
+                    b.HasOne("Backend.Model.Book.BookModel", null)
                         .WithMany("Comments")
-                        .HasForeignKey("BookId");
+                        .HasForeignKey("BookModelId");
+
+                    b.HasOne("Backend.Model.Video.VideoModel", null)
+                        .WithMany("Comments")
+                        .HasForeignKey("VideoModelId");
+                });
+
+            modelBuilder.Entity("Backend.Model.Video.VideoModel", b =>
+                {
+                    b.HasOne("Backend.Model.User.ApplicationUser", "ApplicationUser")
+                        .WithMany("UserVideos")
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -382,7 +496,19 @@ namespace Backend.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Backend.Model.Book.Book", b =>
+            modelBuilder.Entity("Backend.Model.Book.BookModel", b =>
+                {
+                    b.Navigation("Comments");
+                });
+
+            modelBuilder.Entity("Backend.Model.User.ApplicationUser", b =>
+                {
+                    b.Navigation("UserBooks");
+
+                    b.Navigation("UserVideos");
+                });
+
+            modelBuilder.Entity("Backend.Model.Video.VideoModel", b =>
                 {
                     b.Navigation("Comments");
                 });

@@ -19,25 +19,29 @@ import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { loginUser } from "./store/auth-slice";
-
-
+import BookEditPage from "./pages/BookEditPage";
 
 function App() {
   const dispatch = useDispatch();
-   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
+  
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token !== null) {
       dispatch(loginUser(token));
     }
-    if (isAuthenticated === true) {
-      dispatch({ type: "FETCH_USER_DATA" });
+  }, [dispatch]);
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      dispatch({ type: "FETCH_USER_DATA" });
+      dispatch({ type: "FETCH_VIDEO_BY_EMAIL" });
+      dispatch({ type: "FETCH_BOOK_BY_EMAIL" });
+   
     }
   }, [isAuthenticated, dispatch]);
-
-
+  
   return (
     <div className="App">
       <Routes>
@@ -55,7 +59,7 @@ function App() {
         <Route path="/upload-video" element={<UploadVideo />} />
         <Route path="/upload-quiz" element={<UploadQuiz />} />
         <Route path="/my-material" element={<MyMaterial />} />
-
+        <Route path="/edit/book/:id" element={<BookEditPage />} />
       </Routes>
     </div>
   );

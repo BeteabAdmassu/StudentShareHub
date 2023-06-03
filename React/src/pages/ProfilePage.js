@@ -18,6 +18,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useSelector, useDispatch } from "react-redux";
 import Loading from "../components/body/Loading";
 import GenericAlert from "../components/body/GenericAlert";
+import ProfileCard from "../components/body/ProfileCard";
+import ProfileCardEdit from "../components/body/ProfileCardEdit";
 
 const drawerWidth = 240;
 
@@ -52,6 +54,9 @@ const styles = {
 
 export default function ProfilePage() {
   const data = useSelector((state) => state.user.data);
+  const books = useSelector((state) => state.userDatas.books);
+  const videos = useSelector((state) => state.userDatas.videos);
+  const quizzes = useSelector((state) => state.userDatas.quizz);
   const [Department, setDepartment] = useState("");
   const [Year, setYear] = useState("");
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
@@ -61,6 +66,8 @@ export default function ProfilePage() {
   const [profilePicture, setProfilePicture] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
+  const [menuItem, setMenuItem] = useState("book");
+
 
   const dispatch = useDispatch();
 
@@ -68,6 +75,7 @@ export default function ProfilePage() {
     setProfilePicture(data.profilePicture);
     setDepartment(data.department);
     setYear(data.year);
+
     if (showAlert) {
       setTimeout(() => {
         setShowAlert(false);
@@ -98,15 +106,19 @@ export default function ProfilePage() {
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     const data = new FormData(e.currentTarget);
-  
+
     // Get the file input element
     const fileInput = e.currentTarget.querySelector('input[type="file"]');
     // Check if a file is selected
     if (fileInput.files.length > 0) {
       // Append the file with the appropriate content type
-      data.append("profilePicture", fileInput.files[0], fileInput.files[0].name);
+      data.append(
+        "profilePicture",
+        fileInput.files[0],
+        fileInput.files[0].name
+      );
     }
-  
+
     setIsLoading(true);
     await new Promise((resolve, reject) => {
       dispatch({
@@ -154,6 +166,9 @@ export default function ProfilePage() {
     setIsPasswordChangeOpen(true);
     isOption && setIsOption(false);
   };
+  const handleMenuItemChange = (event) => {
+    setMenuItem(event.target.value);
+  };
 
   return (
     <>
@@ -185,14 +200,51 @@ export default function ProfilePage() {
               </Typography>
 
               <Box ml="auto" display="flex" alignItems="center">
-                <Select value="book" variant="standard" sx={{ width: "10rem" }}>
+                <Select value={menuItem} onChange={handleMenuItemChange}>
                   <MenuItem value="book">Book</MenuItem>
                   <MenuItem value="video">Video</MenuItem>
                   <MenuItem value="quiz">Quiz</MenuItem>
                 </Select>
               </Box>
-              <Box></Box>
             </Box>
+            {menuItem === "book" && (
+              <>
+                {books.length === 0 ? (
+                  <Typography variant="h6" textAlign="center" color="primary" marginTop="5rem">
+                    No Materials Found
+                  </Typography>
+                ) : (
+                  books.map((book) => <ProfileCard key={book.id} book={book} />)
+                )}
+              </>
+            )}
+            {menuItem === "video" && (
+              <>
+                {videos.length === 0 ? (          
+                  <Typography variant="h6" textAlign="center" color="primary" marginTop="5rem">
+                    No Materials Found
+                  </Typography>
+                ) : (
+                  videos.map((video) => (
+                    <ProfileCardEdit key={video.id} video={video} />
+                  ))
+                 
+                )}
+              </>
+            )}
+            {menuItem === "quiz" && (
+              <>
+                {quizzes.length === 0 ? (
+                  <Typography variant="h6" textAlign="center" color="primary" marginTop="5rem">
+                    No Materials Found
+                  </Typography>
+                ) : (
+                  quizzes.map((quiz) => (
+                    <ProfileCard key={quiz.id} quiz={quiz} />
+                  ))
+                )}
+              </>
+            )}
           </div>
           {isOption && (
             <Container

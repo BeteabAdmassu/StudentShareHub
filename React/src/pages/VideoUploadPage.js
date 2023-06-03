@@ -12,7 +12,10 @@ import {
 } from "@mui/material";
 import HomeNav from "../components/header/HomeNav";
 import Footer from "../components/footer/Footer";
-
+import Loading from "../components/body/Loading";
+import GenericAlert from "../components/body/GenericAlert";
+import { useDispatch } from "react-redux";
+import { useEffect, useRef  } from "react";
 function getYouTubeVideoId(url) {
   // Match the video ID pattern in the YouTube URL
   const match = url.match(
@@ -34,7 +37,37 @@ export default function BookUploadPage() {
   const [year, setYear] = useState("");
   const [course, setCourse] = useState("");
   const [VIDEO_ID, setVIDEO_ID] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+  const dispatch = useDispatch();
   const VIDEO_SRC = `https://www.youtube.com/embed/${VIDEO_ID}`;
+  
+  const titleRef = useRef("");
+  const descriptionRef = useRef("");
+  const courseRef = useRef("");
+  const videoUrlRef = useRef("");
+
+  useEffect(() => {
+    
+    if (showAlert) {
+      setDepartment("");
+      setYear("");
+      
+       // Resetting input field values using refs
+       titleRef.current.value = "";
+       descriptionRef.current.value = "";
+       courseRef.current.value = "";
+       videoUrlRef.current.value = "";
+       
+
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 5000);
+    }
+  }, [showAlert]);
+  
+  
+  
   const handleTitleChange = (event) => {
     setTitle(event.target.value);
   };
@@ -55,24 +88,49 @@ export default function BookUploadPage() {
     setCourse(event.target.value);
   };
 
-  const handleSaveClick = () => {
-    // TODO: Implement saving logic
+  const handleSubmit = async (e) => {
+
+    e.preventDefault();
+    const data = new FormData(e.currentTarget);
+    
+    setIsLoading(true);
+    await new Promise((resolve, reject) => {
+      dispatch({
+        type: "UPLOAD_VIDEO",
+        payload: {
+         title: data.get("title"),
+          description: data.get("description"),
+          department: department,
+          year: year,
+          course: data.get("course"),
+          video: data.get("video"),
+      
+        },
+        callback: () => {
+          setIsLoading(false);
+          setShowAlert(true);
+          resolve();
+        },
+        errorCallback: (error) => {
+          reject();
+          setIsLoading(false);
+        },
+      });
+    });
   };
 
-  const handleDragOver = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    e.target.style.backgroundColor = "lightgray";
-  };
-
-  const handleDragLeave = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    e.target.style.backgroundColor = "white";
-  };
+ 
 
   return (
     <>
+        {showAlert && (
+        <GenericAlert
+          severity="success"
+          message="Your book has been successfully saved! You can view it in your profile"
+          position={{ bottom: "20px", right: "20px" }}
+        />
+      )}
+      {isLoading && <Loading />}
       <HomeNav />
       <Container maxWidth="md" sx={{ marginTop: "5rem" }}>
         <Box
@@ -90,7 +148,7 @@ export default function BookUploadPage() {
               Enter the following information about of the video
             </Typography>
 
-            <form noValidate autoComplete="off">
+            <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
               <TextField
                 fullWidth
                 required
@@ -99,6 +157,8 @@ export default function BookUploadPage() {
                 onChange={handleTitleChange}
                 margin="normal"
                 variant="outlined"
+                inputRef={titleRef}
+                name = "title"
               />
               <TextField
                 fullWidth
@@ -110,6 +170,8 @@ export default function BookUploadPage() {
                 multiline
                 rows={4}
                 variant="outlined"
+                name = "description"
+                inputRef={descriptionRef}
               />
               <FormControl
                 fullWidth
@@ -125,10 +187,10 @@ export default function BookUploadPage() {
                   onChange={handleDepartmentChange}
                   label="Department"
                 >
-                  <MenuItem value="software-engineering">
+                  <MenuItem value="Software Engineering">
                     Software Engineering
                   </MenuItem>
-                  <MenuItem value="computer-science">Computer Science</MenuItem>
+                  <MenuItem value="Computer Science">Computer Science</MenuItem>
                 </Select>
               </FormControl>
               <FormControl
@@ -159,6 +221,8 @@ export default function BookUploadPage() {
                 onChange={handleCourseChange}
                 margin="normal"
                 variant="outlined"
+                inputRef={courseRef}
+                name = "course"
               />
               {/* add a link input */}
               <TextField
@@ -170,15 +234,17 @@ export default function BookUploadPage() {
                 onChange={(e) => {
                   setVIDEO_ID(getYouTubeVideoId(e.target.value));
                 }}
-              />
-            </form>
-            <Box sx={{ display: "flex", justifyContent: "right" }}>
+                inputRef={videoUrlRef}
+                name = "video"
+
+              /> 
               <Button
+                type="submit"
+                fullWidth
                 variant="contained"
-                color="primary"
-                onClick={handleSaveClick}
+                sx={{ mt: 3, mb: 2 }}
               >
-                Save
+                save
               </Button>
             </Box>
           </Box>
@@ -192,7 +258,6 @@ export default function BookUploadPage() {
               src={VIDEO_SRC}
               title="YouTube video player"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              frameBorder="0"
               allowFullScreen
             ></iframe>
             <Box mt={2}>

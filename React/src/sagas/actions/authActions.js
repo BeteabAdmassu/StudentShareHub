@@ -1,16 +1,22 @@
-import { put, call } from "redux-saga/effects";
+import { put, call,all } from "redux-saga/effects";
 import {
   loginUser,
   logoutUser,
   REGISTER_SUCCESS,
 } from "../../store/auth-slice";
-
 import { setUserInfo } from "../../store/user-slice";
-import { useDispatch } from "react-redux";
-import { act } from "react-dom/test-utils";
+
+
+export function* deleteUserData()
+{
+  console.log("hello")
+
+}
+
 
 export function* loginSaga(action) {
-  //delay for 5 seconds
+  console.log("login saga")
+
   yield new Promise((resolve) => setTimeout(resolve, 2000));
   try {
     const formData = new FormData();
@@ -52,6 +58,7 @@ export function* loginSaga(action) {
 
 export function* registerSaga(action) {
   //delay for 5 seconds
+  console.log("register saga")
   yield new Promise((resolve) => setTimeout(resolve, 2000));
   try {
     const formData = new FormData();
@@ -89,6 +96,7 @@ export function* registerSaga(action) {
 }
 
 export function* logoutSaga(action) {
+  console.log("logout saga")
   //delay for 5 seconds
   yield new Promise((resolve) => setTimeout(resolve, 2000));
 
@@ -129,6 +137,7 @@ export function* logoutSaga(action) {
 }
 
 export function* fetchUserData() {
+  console.log("fetch user data saga")
   try {
     const response = yield call(
       fetch,
@@ -141,9 +150,11 @@ export function* fetchUserData() {
         },
       }
     );
+
     if (response.ok) {
       const data = yield response.json();
       yield put(setUserInfo(data));
+     // yield put({ type: "FETCH_BOOK_BY_EMAIL" });
     } else {
       throw new Error("Request failed with status: " + response.status);
     }
@@ -152,7 +163,9 @@ export function* fetchUserData() {
   }
 }
 
+
 export function* updateUserData(action) {
+  console.log("update user data saga")
   yield new Promise((resolve) => setTimeout(resolve, 2000));
 
   try {
@@ -166,18 +179,13 @@ export function* updateUserData(action) {
     yield call(fetch, "https://localhost:7061/api/User/UpdateUser", {
       method: "PUT",
       headers: {
-        
         Authorization: `bearer ${localStorage.getItem("token")}`,
-        //"Content-Type": "multipart/form-data",
-        // Set the content type to multipart/form-data
       },
       body: formData,
-      
     });
 
-    
-
     yield put({ type: "FETCH_USER_DATA" });
+    
 
     if (action.callback) {
       action.callback();
@@ -188,3 +196,5 @@ export function* updateUserData(action) {
     }
   }
 }
+
+

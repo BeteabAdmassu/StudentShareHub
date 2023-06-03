@@ -3553,19 +3553,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\anobi\\.nuget\\packages\\": {}
+    "C:\\Users\\hp\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\anobi\\Documents\\StudentShareHub\\Backend\\Backend.csproj",
+      "projectUniqueName": "C:\\Books\\Web\\Asp.net\\Web project\\StudentShareHub\\Backend\\Backend.csproj",
       "projectName": "Backend",
-      "projectPath": "C:\\Users\\anobi\\Documents\\StudentShareHub\\Backend\\Backend.csproj",
-      "packagesPath": "C:\\Users\\anobi\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\anobi\\Documents\\StudentShareHub\\Backend\\obj\\",
+      "projectPath": "C:\\Books\\Web\\Asp.net\\Web project\\StudentShareHub\\Backend\\Backend.csproj",
+      "packagesPath": "C:\\Users\\hp\\.nuget\\packages\\",
+      "outputPath": "C:\\Books\\Web\\Asp.net\\Web project\\StudentShareHub\\Backend\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\anobi\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\hp\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -3573,6 +3573,7 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Program Files\\dotnet\\sdk\\7.0.302\\Sdks\\Microsoft.NET.Sdk.Web\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -3677,7 +3678,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.201\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.302\\RuntimeIdentifierGraph.json"
       }
     }
   }

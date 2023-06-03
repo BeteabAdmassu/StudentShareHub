@@ -14,15 +14,52 @@ import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import BookCardPdf from "../components/body/BookCardPdf";
+import { useState, useEffect } from "react";
+
+
+
+
+function getYouTubeVideoId(url) {
+  // Match the video ID pattern in the YouTube URL
+  const match = url.match(
+    /(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:.*&)?v=|(?:embed|v)\/))([\w-]{11})/
+  );
+
+  if (match) {
+    // Extract the video ID from the match
+    return match[1];
+  } else {
+    // The URL doesn't match the expected pattern
+    return null;
+  }
+}
 
 
 export default function ReviewCard(props) {
   const [state, setState] = React.useState(false);
   const [liked, setLiked] = React.useState(false);
+  const [VIDEO_ID, setVIDEO_ID] = useState("");
+  const VIDEO_SRC = `https://www.youtube.com/embed/${VIDEO_ID}`;
 
 
+  // if(props.title === "Videos"){
+  //   setVIDEO_ID(getYouTubeVideoId(props.data.videoUrl));
+  //   console.log(VIDEO_ID);
+  // }
    
+  useEffect(() => {
+    if(props.title === "Videos"){
+      setVIDEO_ID(getYouTubeVideoId(props.data.videoUrl));
+      console.log(VIDEO_ID);
+    }
+  }, []);
+
  
+    
+
+
+
 
   const handleLikeClick = () => {
     setLiked(!liked);
@@ -69,18 +106,33 @@ export default function ReviewCard(props) {
   };
   return (
     <>
-      {state && Drawer()}
-
+     {state && Drawer()}
       <Card
         sx={{ maxWidth: 250, minWidth: 250, borderRadius: "20px", margin: 2 }}
       >
-        <CardMedia
-          component="img"
-          height="200"
-          image={dummy}
-          alt="img"
-          onClick={toggleDrawer()}
-        />
+        {props.title === "Books" && <BookCardPdf pdf={props.data.filePath} />}
+        {props.title === "Videos" && (
+          // console.log(VIDEO_SRC),
+           
+          //Iframe
+          // <CardMedia
+          //   component="iframe"
+          //   height="140"
+          //   image={VIDEO_SRC}
+          //   alt="video"
+          // />
+
+          <iframe
+              width="100%"
+             src={VIDEO_SRC}
+              title="YouTube video player"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            ></iframe>
+
+
+          )}  
+      
         <CardContent
           style={{
             maxHeight: "3rem",
@@ -96,17 +148,22 @@ export default function ReviewCard(props) {
             color="#2b6cb0"
             sx={{ textAlign: "left", width: "100%", height: "100%" }}
           >
-            {props.data.title}
+           {props.data.title}
           </Typography>
         </CardContent>
         <CardHeader
-          style={{ maxHeight: "3rem", minHeight: "3rem", textAlign: "left" }}
+          style={{ maxHeight: "3rem", minHeight: "3rem", textAlign: "left", marginTop:'1rem' }}
           avatar={
-            <Avatar aria-label="user profile" /*src={dummy}*/>
-              {props.data.user[0]}
+            <Avatar aria-label="user profile">
+              <img
+                src={props.data.authorProfilePic
+                }   
+                alt="user profile"
+                style={{ width: "100%", height: "100%" }}
+              />
             </Avatar>
           }
-          title={props.data.user}
+          title={props.data.author}
           subheader={props.data.date}
         />
 
@@ -133,7 +190,7 @@ export default function ReviewCard(props) {
               </Typography>
             </Button>
 
-            {/* Views */}
+            
             <Button variant="text">
               <VisibilityIcon sx={{ marginRight: "0.5rem" }} />
               <Typography
@@ -146,7 +203,7 @@ export default function ReviewCard(props) {
             </Button>
           </Box>
         </CardActions>
-      </Card>
+      </Card> 
     </>
   );
 }

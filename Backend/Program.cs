@@ -52,13 +52,6 @@ builder.Services.AddAuthentication()
 
 builder.Services.AddAuthorization();
 
-/*builder.Services.AddStaticFiles(new StaticFileOptions
-{
-    FileProvider = new PhysicalFileProvider(Path.Combine(builder.Environment.ContentRootPath, "wwwroot")),
-    RequestPath = "/assets" // Modify the RequestPath if needed
-});*/
-
-// Add sttic file middleware
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

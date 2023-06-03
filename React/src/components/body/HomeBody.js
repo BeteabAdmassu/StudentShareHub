@@ -15,13 +15,14 @@ import {
 } from "@mui/material";
 import { useSelector } from "react-redux";
 import HomeViews from "./HomeViews";
+import { useDispatch } from "react-redux";
 
 export default function SimpleContainer(props) {
   const [filterValue, setFilterValue] = React.useState(false);
 
   const books = useSelector((state) => state.books.books);
   const videos = useSelector((state) => state.videos.videos);
-  const quizzes = useSelector((state) => state.quizz.quizz );
+
 
   const handleSearch = (labelOptionValue) => {
     //...
@@ -32,8 +33,11 @@ export default function SimpleContainer(props) {
       const { name, value } = event.target;
       onFilterChange(name, value);
     };
+
+
     return (
       <Box sx={{ display: "flex", justifyContent: "center" }}>
+  
         <Box sx={{ width: "60%" }}>
           <Typography variant="h6" sx={{ marginBottom: "1rem" }}>
             Filter
@@ -47,9 +51,9 @@ export default function SimpleContainer(props) {
               onChange={handleFilterChange}
             >
               <MenuItem value="">All</MenuItem>
-              <MenuItem value="books">Books</MenuItem>
-              <MenuItem value="videos">Videos</MenuItem>
-              <MenuItem value="quizzes">Quizzes</MenuItem>
+              <MenuItem>Books</MenuItem>
+              <MenuItem>Videos</MenuItem>
+              <MenuItem >Quizzes</MenuItem>
             </Select>
           </FormControl>
           <FormControl sx={{ width: "10rem" }}>
@@ -133,10 +137,14 @@ export default function SimpleContainer(props) {
             }}
           >
          
-            { books.length> 0 && <HomeViews books={books} materialType="Books"/> } 
-            { videos.length> 0 && <HomeViews books={videos} materialType="Videos"/> }
-            { quizzes.length> 0 && <HomeViews books={quizzes} materialType="Quizzes"/> }
-          
+      
+
+            {
+              books.length === 0? <Typography variant="h6" sx={{ textAlign: "left", fontWeight: 700 }}>No Books</Typography> : <HomeViews books={books} materialType="Books"/>
+            }
+            { videos.length > 0 && <HomeViews videos={videos} materialType="Videos"/>}
+
+
           </Box>
         </Box>
       </Container>

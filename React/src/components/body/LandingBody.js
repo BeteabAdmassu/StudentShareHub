@@ -43,7 +43,7 @@ export default function SimpleContainer() {
               sx={{ mt: 2, mr: 2, borderRadius: "10px", fontWeight: "Bold" }}
               endIcon={<ArrowForwardIosIcon />}
               component={Link}
-              to="/choose-department"
+              to="/home"
             >
               Get Started
             </Button>
@@ -95,7 +95,7 @@ export default function SimpleContainer() {
             },
           }}
           component={Link}
-          to="/choose-department"
+          to="/home"
         >
           <Box>
             <Box>
@@ -135,7 +135,7 @@ export default function SimpleContainer() {
             },
           }}
           component={Link}
-          to="/choose-department"
+          to="/home"
         >
           <Box>
             <Box>
@@ -179,7 +179,7 @@ export default function SimpleContainer() {
             },
           }}
           component={Link}
-          to="/choose-department"
+          to="/home"
         >
           <Box>
             <Box>
@@ -218,7 +218,7 @@ export default function SimpleContainer() {
             },
           }}
           component={Link}
-          to="/choose-department"
+          to="/home"
         >
           <Box>
             <Box>

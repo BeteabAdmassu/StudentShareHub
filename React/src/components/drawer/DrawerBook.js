@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef} from "react";
 import {
   Box,
   Button,
@@ -21,16 +21,21 @@ import FileViewer from "react-file-viewer";
 import { useSelector } from "react-redux";
 import IconButton from "@mui/material/IconButton";
 import { Link } from "react-router-dom";
+import BookCardPdf from "../body/BookCardPdf";
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import { useDispatch } from "react-redux";
 
 export default function RightDrawer(props) {
   const auth = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
   const [replyIndex, setReplyIndex] = useState(-1);
   const [replyText, setReplyText] = useState("");
-
+  const linkRef = useRef(null);
   const handleReply = (index) => {
     setReplyIndex(index);
   };
 
+   console.log('hello')
   const handleCancelReply = () => {
     setReplyIndex(-1);
     setReplyText("");
@@ -42,6 +47,14 @@ export default function RightDrawer(props) {
       setReplyIndex(-1);
       setReplyText("");
     }
+  };
+  const handleDownload = () => {
+     dispatch({ type: "DOWNLOAD_BOOK", payload: props.data.filePath });
+  };
+
+  const fileNameGenerator = (filePath) => {
+    const split = filePath.split("/");
+    return split[split.length - 1];
   };
   return (
     <Drawer
@@ -77,21 +90,15 @@ export default function RightDrawer(props) {
           >
             <Avatar
               alt="Remy Sharp"
-              src="https://via.placeholder.com/50"
+              src={props.data.authorProfilePic}
               sx={{ marginRight: "1rem", width: "2rem", height: "2rem" }}
             />
-            <Typography variant="body">{props.data.user}</Typography>
+            <Typography variant="h6">{props.data.author}</Typography>
           </Box>
-          <img src={"https://via.placeholder.com/300x200"} alt="example" />
-          {/* <img src={props.data.file} alt="example" style={ 
-              {width: 300, height: 200, maxWidth: 300, maxHeight: 200}
-           } /> */}
-          {/* File viewer */}
-          {/* <FileViewer
-                fileType={props.data.fileType}
-                filePath={props.data.file}
-                onError={this.onError}
-                /> */}
+          <Box width="70%">
+          <BookCardPdf pdf={props.data.filePath} />
+          </Box>
+        
         </Box>
 
         {/* profile information */}
@@ -221,13 +228,26 @@ export default function RightDrawer(props) {
         </Box>
       </Box>
       {/* download button */}
-      <Box sx={{ position: "fixed", bottom: 0, right: "11rem" }}>
+      <Box sx={{ position: "fixed", bottom: 0, right: "6rem" }}>
         <Button
           variant="contained"
           startIcon={<CloudDownloadIcon />}
           sx={{ marginBottom: "1rem" }}
+          onClick={handleDownload}
+
         >
           Download
+        </Button>
+      </Box>
+      {/* download button */}
+      <Box sx={{ position: "fixed", bottom: 0, right: "17rem" }}>
+        <Button
+          variant="contained"
+          startIcon={<OpenInNewIcon />}
+          sx={{ marginBottom: "1rem" }}
+         onClick= {() => window.open(props.data.filePath, "_blank")}
+        >
+          Open File
         </Button>
       </Box>
     </Drawer>

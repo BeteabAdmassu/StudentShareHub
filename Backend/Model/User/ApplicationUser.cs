@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel;
+
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Backend.Model.Book;
+using Backend.Model.Video;
 
 namespace Backend.Model.User
 {
@@ -16,10 +19,13 @@ namespace Backend.Model.User
 
         public string? ProfilePicture { get; set; }
 
+        public List<BookModel> UserBooks { get; set; } = new List<BookModel>();
+        public List<VideoModel> UserVideos { get; set; } = new List<VideoModel>();
+
         public ApplicationUser()
         {
-            Department = "Computer science";
-            Year = 0;
+            Department = "Computer Science";
+            Year = 1;
         }
     }
 }

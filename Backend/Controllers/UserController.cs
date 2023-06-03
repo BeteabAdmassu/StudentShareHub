@@ -1,9 +1,13 @@
 ﻿using Backend.Configurations;
+using Backend.Model.Book;
+using Backend.Model.Quiz;
 using Backend.Model.User;
+using Backend.Model.Video;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -151,14 +155,18 @@ namespace Backend.ControllersBase
                 return NotFound(); // User not found
             }
 
+
+            if(model.ProfilePicture == null)
+            {  
             // Delete previous profile picture if it exists
-            if (!string.IsNullOrEmpty(user.ProfilePicture))
-            {
+              if (!string.IsNullOrEmpty(user.ProfilePicture))
+               {
                 var previousFilePath = Path.Combine(Directory.GetCurrentDirectory(), "Assets/ProfilePics", user.ProfilePicture);
-                if (System.IO.File.Exists(previousFilePath))
-                {
+                  if (System.IO.File.Exists(previousFilePath))
+                  {
                     System.IO.File.Delete(previousFilePath);
-                }
+                  }
+              }
             }
 
             user.FirstName = model.FirstName;
@@ -172,7 +180,7 @@ namespace Backend.ControllersBase
                 if (profilePicture.Length > 0)
                 {
                     var fileName = Guid.NewGuid().ToString() + Path.GetExtension(profilePicture.FileName);
-                
+
                     var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Assets/ProfilePics", fileName);
 
                     using (var stream = new FileStream(filePath, FileMode.Create))

@@ -15,14 +15,13 @@ import Theme from "../../ui/Theme";
 import { ThemeProvider } from "@mui/material/styles";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import LogoutIcon from "@mui/icons-material/Logout";
 import QuizIcon from "@mui/icons-material/Quiz";
 import AddIcon from "@mui/icons-material/Add";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import YouTubeIcon from "@mui/icons-material/YouTube";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector} from "react-redux";
 
 const settings = ["Profile",  "Logout"];
 const upload = ["Book", "Video", "Quiz"];
@@ -31,7 +30,7 @@ function getLink(setting) {
     case "My Material":
       return "/my-material";
     case "Profile":
-      return "/profile";
+      return "/profile"
     case "Change password":
       return "/change-password";
     case "Logout":
@@ -51,6 +50,7 @@ function ResponsiveAppBar() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const data = useSelector((state) => state.user.data);
 
+
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -58,6 +58,8 @@ function ResponsiveAppBar() {
   const handleCloseUserMenu = (event) => {
     anchorElUser && setAnchorElUser(null);
     anchorEl && setAnchorEl(null);
+
+
   };
 
   const handleClick = (event) => {

@@ -18,12 +18,23 @@ namespace Backend.Data
         {
         }
 
-        // Add your DbSets here
-        //  public DbSet<Quiz> Quizzes { get; set; }
-
-        public DbSet<Book> Books { get; set; }
-        public DbSet<Video> Videos { get; set; }
+        public DbSet<BookModel> Books { get; set; }
+        public DbSet<VideoModel> Videos { get; set; }
         public DbSet<Comment> Comments { get; set; }
-        //   public DbSet<Video> Videos { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<BookModel>()
+                .HasOne(b => b.ApplicationUser)
+                .WithMany(u => u.UserBooks)
+                .HasForeignKey(b => b.ApplicationUserId);
+
+            modelBuilder.Entity<VideoModel>()
+                .HasOne(b => b.ApplicationUser)
+                .WithMany(u => u.UserVideos)
+                .HasForeignKey(b => b.ApplicationUserId);
+        }
     }
 }

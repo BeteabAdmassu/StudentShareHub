@@ -44,10 +44,12 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function SignUp() {
+
   const [error, setError] = useState(null); // Error state for the form
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+ 
 
   const handleSubmit = async (event) => {
   
@@ -67,6 +69,7 @@ export default function SignUp() {
         callback: () => {
           setIsLoading(false); // Stop loading
           resolve(); // Resolve the Promise to continue with the code after the dispatch
+      
           navigate("/signin");
         },
         errorCallback: (error) => {

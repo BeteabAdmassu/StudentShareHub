@@ -3,9 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const videoSlice = createSlice({
     name: "videos",
     initialState: {
-        videos: [
-            
-        ],
+        videos: [],
         filters: {
             materialType: "",
             year: "",
@@ -15,9 +13,11 @@ const videoSlice = createSlice({
     reducers: {
         setVideos(state, action) {
             state.videos = action.payload;
+            console.log(state.videos);
         },
         setFilters(state, action) {
             state.filters = action.payload;
+
         },
     },
 });

@@ -15,17 +15,44 @@ import HomeNav from "../components/header/HomeNav";
 import Footer from "../components/footer/Footer";
 import { useRef } from "react";
 import { useDispatch } from "react-redux";
-import { userBookActions } from "../store/userBook";
-import { v4 as uuidv4 } from "uuid";
 import { useSelector } from "react-redux";
+import Loading from "../components/body/Loading";
+import GenericAlert from "../components/body/GenericAlert";
+import { useEffect } from "react";
+
 
 export default function BookUploadPage() {
   const [department, setDepartment] = useState("");
   const [year, setYear] = useState("");
   const [file, setFile] = useState(null);
-
-  const user = useSelector((state) => state.auth.user);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
   const dispatch = useDispatch();
+
+  const titleRef = useRef("");
+  const descriptionRef = useRef("");
+  const courseRef = useRef("");
+  const fileInputRef = useRef("");
+
+
+  useEffect(() => {
+    
+    if (showAlert) {
+      setDepartment("");
+      setYear("");
+      setFile("");
+      
+       // Resetting input field values using refs
+       titleRef.current.value = "";
+       descriptionRef.current.value = "";
+       courseRef.current.value = "";
+       fileInputRef.current.value = "";
+
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 5000);
+    }
+  }, [showAlert]);
 
   const handleDepartmentChange = (event) => {
     setDepartment(event.target.value);
@@ -35,7 +62,7 @@ export default function BookUploadPage() {
     setYear(event.target.value);
   };
 
-  const fileInputRef = useRef(null);
+
 
   const handleDragOver = (e) => {
     e.preventDefault();
@@ -61,39 +88,58 @@ export default function BookUploadPage() {
     setFile(e.target.files[0]);
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-
-    if (file) {
-      const newBook = {
-        id: uuidv4(),
+  const handleSubmit = async (e) => {
+  
+    e.preventDefault();
+    const data = new FormData(e.currentTarget);
+  
+    // Get the file input element
+    const fileInput = e.currentTarget.querySelector('input[type="file"]');
+    // Check if a file is selected
+    if (fileInput.files.length > 0) {
+      // Append the file with the appropriate content type
+      data.append("file", fileInput.files[0], fileInput.files[0].name);
+    }
+  
+    setIsLoading(true);
+    await new Promise((resolve, reject) => {
+      dispatch({
+        type: "UPLOAD_BOOK",
+        payload: {
         title: data.get("title"),
         description: data.get("description"),
-        user: user,
-        likes: 0,
-        views: 0,
-        department: data.get("department"),
-        year: data.get("year"),
+        department: department,
+        year: year,
         course: data.get("course"),
         file: file,
-        date: new Date(),
-        materialType: "Book",
-        comments: [],
-      };
-      dispatch(userBookActions.addBook(newBook));
-    } else {
-      alert("Please select a file");
-    }
+        },
+        callback: () => {
+          setIsLoading(false);
+          setShowAlert(true);
+          resolve();
+        },
+        errorCallback: (error) => {
+          reject();
+          setIsLoading(false);
+        },
+      });
+    });
   };
 
   const handleFileUpload = () => {
-    console.log(fileInputRef.current.files);
     fileInputRef.current.click();
   };
 
   return (
     <>
+    {showAlert && (
+        <GenericAlert
+          severity="success"
+          message="Your book has been successfully saved! You can view it in your profile"
+          position={{ bottom: "20px", right: "20px" }}
+        />
+      )}
+      {isLoading && <Loading />}
       <HomeNav />
       <Container maxWidth="md" sx={{ marginTop: "5rem" }}>
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
@@ -112,6 +158,7 @@ export default function BookUploadPage() {
               </Typography>
               <TextField
                 margin="normal"
+
                 required
                 fullWidth
                 id="title"
@@ -119,6 +166,7 @@ export default function BookUploadPage() {
                 name="title"
                 autoComplete="Title"
                 autoFocus
+                inputRef={titleRef}
               />
               <TextField
                 margin="normal"
@@ -131,6 +179,7 @@ export default function BookUploadPage() {
                 autoFocus
                 multiline
                 rows={4}
+                inputRef={descriptionRef}
               />
               <FormControl fullWidth>
                 <InputLabel id="demo-simple-select-label">
@@ -180,6 +229,7 @@ export default function BookUploadPage() {
                 name="course"
                 autoComplete="Course"
                 autoFocus
+                inputRef={courseRef}
               />
               <Button
                 type="submit"
